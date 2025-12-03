@@ -11,7 +11,7 @@ Breast Cancer (Predicting invasive ductal carcinoma in tissue slices)
 
 **Deep Learning for Breast Cancer Histopathology Image Classification**
 
-[Overview](#overview) • [Features](#features) • [Installation](#installation) • [Usage](#usage) • [Architecture](#architecture) • [Results](#results) • [Structure](#structure)
+
 
 </div>
 
