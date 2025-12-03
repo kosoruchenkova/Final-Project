@@ -187,3 +187,32 @@ if run_training:
     scheduler = get_scheduler(optimizer, start_lr, end_lr, 2*NUM_EPOCHS)
     results = train_loop(model, criterion, optimizer, scheduler=scheduler, num_epochs=NUM_EPOCHS)
     torch.save(model.state_dict(), MODEL_PATH + "_cuda.pth")
+
+###Model Evaluation
+def evaluate_model(model, predictions_df, key):
+    """Evaluate model on specified dataset"""
+    model.eval()
+    with torch.no_grad():
+        for i, data in enumerate(dataloaders[key]):
+            inputs = data["image"].to(device)
+            labels = data["label"].to(device)
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            # Store predictions
+            predictions_df.loc[i*BATCH_SIZE:(i+1)*BATCH_SIZE-1, "proba"] = sigmoid(proba[:, 1])
+    return predictions_df
+
+###Confusion Matrix
+from sklearn.metrics import confusion_matrix
+
+def get_confusion_matrix(y_true, y_pred):
+    """Generate normalized confusion matrix"""
+    confusion = confusion_matrix(y_true, y_pred, labels=["no cancer", "cancer"])
+    confusion_df = pd.DataFrame(confusion, 
+                               index=["actual no cancer", "actual cancer"],
+                               columns=["predicted no cancer", "predicted cancer"])
+    for n in range(2):
+        confusion_df.iloc[n] = confusion_df.iloc[n] / confusion_df.sum(axis=1).iloc[n]
+    return confusion_df
+
+
